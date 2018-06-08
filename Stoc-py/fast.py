@@ -15,8 +15,8 @@ r = 0.05
 sigma = 0.2
 K = 100
 S_0 = 100
-F = 3
-dS = 0.05
+F = 2
+dS = 5
 T = 1/12
 
 print("""Parameters

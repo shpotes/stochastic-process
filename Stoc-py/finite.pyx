@@ -17,13 +17,13 @@ def finite_difference(float r, float sigma, int K, int S_0,
     N     : Intervalos del tiempo
     dT    : Tamaños de intervalos del tiempo
     """
-    
+
     cdef int S_max = S_0 * F_max
     cdef Py_ssize_t M = int(S_max/dS)
     cdef float dT_tmp = (dS/(sigma*S_max))**2
     cdef Py_ssize_t N = int(np.ceil(T/dT_tmp))
     cdef float dT = T/N
-    
+
     # Ponderación
     cdef np.ndarray[double] a, b, c, J
     a = np.zeros(M+1, dtype=np.float)
@@ -35,7 +35,6 @@ def finite_difference(float r, float sigma, int K, int S_0,
     b = (dT/(1+r*dT)) * ((1/dT) - sigma**2 * J**2)
     c = (dT/(1+r*dT)) * ((sigma**2 * J**2)/2 + (r * J/2))
 
-    # print(a)
     cdef np.ndarray[double, ndim=2] F = np.zeros((N+1, M+1))
     # Condiciones de frontera
 
