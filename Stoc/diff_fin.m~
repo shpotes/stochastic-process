@@ -24,8 +24,8 @@ for TS=1:10
     FF = [FF F];
 end
 plot(FF*0 + Call, 'r')
-hold on
 plot(FF, 'ok')
+axis(
 
 %%
 % 
