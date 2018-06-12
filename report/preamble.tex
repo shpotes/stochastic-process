@@ -1,0 +1,58 @@
+%% Packages
+% Language
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage[none]{hyphenat}
+\sloppy
+
+% Page dimensions
+\usepackage{geometry}
+
+% Line numbers
+\usepackage{lineno}
+
+% Graphics
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{subcaption}
+
+% Mathematics
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{harpoon}
+
+\usepackage{bm}
+\usepackage{mathtools}
+\usepackage{physics}
+
+\usepackage{array}
+
+\newcolumntype{C}{>{$}c<{$}}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{multirow}
+
+% Colors
+\usepackage{xcolor}
+
+% Things to do
+\usepackage{todonotes}
+
+% Expected value
+\DeclareMathOperator{\E}{\mathbb{E}}
+
+\usepackage[makeroom]{cancel}
+
+% Section formatting
+\usepackage{titlesec}
+\titlelabel{\thetitle\quad}
+
+% Elsevier article
+\usepackage{etoolbox}
+
+\patchcmd{\abstract}{Abstract}{Resumen}{}{}
+\patchcmd{\keyword}{Keywords}{Palabras clave}{}{}
