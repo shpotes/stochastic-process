@@ -1,0 +1,192 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphics}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+\begin{document}
+\subsection{Diferencias Finitas aplicadas a la valoración de opciones}
+
+En el desarrollo de este trabajo se utiliza el método numérico de diferencias finitas explícitas para
+determinar el valor de una opción resolviendo la ecuación diferencial de Black-Scholes-Merton dada
+por 
+
+\begin{equation}
+  \label{PDE}
+  \frac{\partial{f}}{\partial{t}} + rS\frac{\partial{f}}{\partial{S}} +
+  \frac{1}{2}\frac{\partial^2{f}}{\partial{S^2}}\sigma^2{S}^2 = rf 
+\end{equation}
+
+\smallskip
+
+Sea $T$ el término de vencimiento de la opción y sea $S_{max}$ un precio del activo suficientemente
+grande. Para obtener la malla discreta, se busca dividir el intervalo de tiempo $[0,T]$ en $N$
+subintervalos iguales de longitud $\Delta t = \frac{T}{N}$ y se obtienen un total de $N+1$ periodos de tiempo. Por otra parte, el intervalo $[0,S_{max}]$ se va a dividir en $M$ subintervalos de longitud $\Delta S = \frac{S_{max}}{M}$ obteniendo asi $M+1$ precios del activo espaciados igualmente. De esta manera, la malla estará conformada por un total de (M+1)*(N+1) puntos. Los intervalos obtenidos son de la forma:
+\begin{align*}
+    t &= 0, \Delta t, 2 \Delta t, \ldots, N \Delta t \\
+    S &= 0, \Delta S, 2 \Delta S, \ldots M \Delta S
+\end{align*}
+
+Se debe escoger el valor $S_{max}$ de tal modo que uno de los valores $\Delta S$ sea el precio presente del activo. Por lo general, funciona bien escoger $S_{max}$ como $3$ veces el precio inicial del activo $(S_{max} = 3S_0)$. El nodo $(i,j)$ sobre la malla es el punto que corresponde al tiempo $i\Delta t$ y al precio del activo $j\Delta S $. Así, $f_{i,j}$ denota el valor de la opción para el tiempo $i$ y un precio del activo $j$. \\
+
+Cada uno de los diferenciales de la ecuación (\ref{PDE}) puede ser aproximado mediante una diferencia finita explícita. Para un nodo interior $(i+1,j)$ por ejemplo, $\frac{\partial{f}}{\partial{S}}$ puede ser aproximado mediante: \\
+
+\textbf{Diferencias adelantadas}
+
+\begin{equation}
+  \frac{\partial{f}}{\partial{S}} = \frac{f_{i+1,j+1}-f_{i+1,j}}{\Delta S}  
+\end{equation}
+
+\textbf{Diferencias atrasadas}
+
+\begin{equation}
+ \frac{\partial{f}}{\partial{S}} = \frac{f_{i+1,j}-f_{i+1,j-1}}{\Delta S}   
+\end{equation}
+
+\textbf{Diferencias centradas}
+
+\begin{equation}
+ \frac{\partial{f}}{\partial{S}} = \frac{f_{i+1,j+1}-f_{i+1,j-1}}{2 \Delta S}
+\end{equation}
+
+La forma más adecuada para aproximar $\frac{\partial{f}}{\partial{S}}$ es utilizando la aproximación simétrica (diferencias centradas). \\
+
+Para $\frac{\partial{f}}{\partial{t}}$ se utilizará la diferencia hacia adelante dada por:
+
+\begin{equation}
+  \frac{\partial{f}}{\partial{t}} = \frac{f_{i+1,j}-f_{i,j}}{\Delta t}  
+\end{equation}
+
+Y para $\frac{\partial^2{f}}{\partial{S^2}}$ también se va a utilizar una diferencia hacia adelante dada por:
+
+\begin{equation}
+  \frac{\partial^2{f}}{\partial{S^2}} = \frac{\frac{f_{i+1, j+1}-f_{i+1,j}}{\Delta S} - \frac{f_{i+1, j}-f_{i+1,j-1}}{\Delta S}}{\Delta S} 
+\end{equation}
+
+\begin{equation}
+ \frac{\partial^2{f}}{\partial{S^2}} = \frac{f_{i+1,j+1} - 2f_{i+1,j} + f_{i+1,j-1} }{(\Delta S)^2}
+\end{equation}
+
+De esta manera, la ecuación en diferencias finitas asociada a la ecuación de Black-Scholes-Merton es de la forma:
+
+\begin{equation*}
+    \frac{f_{i+1,j}-f_{i,j}}{\Delta t} + rj\Delta S \left( \frac{f_{i+1,j+1}-f_{i+1,j-1}}{2 \Delta S} \right) + \frac{1}{2}\sigma^{2}j^{2}(\Delta S)^{2} \left( \frac{f_{i+1,j+1} + f_{i+1,j-1} - 2f_{i+1,j}}{(\Delta S)^2}\right) = r f_{i,j}
+\end{equation*}
+
+Agrupando términos obtenemos: 
+
+\begin{equation*}
+    \left( \frac{1}{2} \sigma^{2} j^{2} - \frac{rj}{2} \right) f_{i+1,j-1} + \left( \frac{1}{\Delta t} - \sigma^{2} j^{2} \right) f_{i+1,j} + \left( \frac{1}{2} \sigma^{2} j^{2} + \frac{rj}{2} \right) f_{i+1, j+1} = \left( r + \frac{1}{\Delta t} \right) f_{ij}
+\end{equation*}
+
+Finalmente, 
+
+\begin{equation}
+\label{eq_bs_pond}
+    f_{i,j} = \frac{\Delta t}{1+r\Delta t} \left( \frac{1}{2} \sigma^{2} j^{2} - \frac{rj}{2} \right) f_{i+1,j-1} + \frac{\Delta t}{1+r\Delta t} \left( \frac{1}{\Delta t} - \sigma^{2} j^{2} \right) f_{i+1,j} + \frac{\Delta t}{1+r\Delta t} \left( \frac{1}{2} \sigma^{2} j^{2} + \frac{rj}{2} \right) f_{i+1, j+1} 
+\end{equation}
+
+En este punto, es importante notar que $f_{i,j}$ puede ser interpretada como el valor esperado de una variable aleatoria discreta. De esta manera, la ecuación (\ref{eq_bs_pond}) puede escribirse de la siguiente manera: 
+
+\begin{equation}
+    f_{i,j} = a_j f_{i+1,j-1} + b_j f_{i+1,j} + c_j f_{i+1, j+1}
+\end{equation}
+
+donde 
+
+\begin{equation}
+\begin{split}
+    a_j &= \frac{\Delta t}{1+r\Delta t} \left( \frac{1}{2} \sigma^{2} j^{2} - \frac{rj}{2} \right) \\ 
+    b_j &= \frac{\Delta t}{1+r\Delta t} \left( \frac{1}{\Delta t} - \sigma^{2} j^{2} \right) \\
+    c_j &= \frac{\Delta t}{1+r\Delta t} \left( \frac{1}{2} \sigma^{2} j^{2} + \frac{rj}{2} \right)
+\end{split}
+\end{equation}
+
+\smallskip
+
+Ahora, debemos garantizar que $a_j$, $b_j$ y $c_j$ se encuentren en el intervalo $[0,1]$ y de esta manera, podemos encontrar las condiciones de estabilidad. 
+
+En primer lugar, vamos a ver que {$0 \leq a_j \leq 1$}:
+
+\begin{align*}
+    0 &\leq a_j \leq 1 \\
+    0 &\leq \frac{\Delta t}{1+r\Delta t} \left( \frac{1}{2} \sigma^{2} j^{2} - \frac{rj}{2} \right) \leq 1
+\end{align*}
+
+Entonces, tenemos que 
+
+\begin{align*}
+    0 &\leq \frac{1}{2} \sigma^{2} j^{2} - \frac{rj}{2} \\ 
+    0 &\leq \sigma^{2} j^{2} - rj \\
+    0 &\leq j(\sigma^{2} j - r) \\
+    r &\leq \sigma^{2} j
+\end{align*}
+
+%% Falta decir por qué esta condición siempre se cumple 
+
+Por otra parte, 
+
+\begin{equation*}
+   \frac{1}{2} \sigma^{2} j^{2} - \frac{rj}{2} \leq \frac{1+r\Delta t}{\Delta t}  
+\end{equation*}
+
+\smallskip
+
+Ahora, vamos a ver que {$0 \leq b_j \leq 1$}:
+
+\begin{align*}
+    0 &\leq b_j \leq 1 \\
+    0 & \frac{\Delta t}{1+r\Delta t} \left( \frac{1}{\Delta t} - \sigma^{2} j^{2} \right) \leq 1
+\end{align*}
+
+\smallskip
+
+Entonces tenemos que: 
+
+\begin{equation}
+\label{cond_est}
+\sigma^{2} j^{2} \leq \frac{1}{\Delta t}    
+\end{equation}
+
+\smallskip
+
+Sabemos que $\frac{1}{\Delta t} \to \infty$ cuando $\Delta t \to 0$. Entonces, escogemos el $j$ más grande, el cual es $M$ y lo reemplazamos en la ecuación (\ref{cond_est}). 
+
+\begin{equation*}
+\sigma^{2} M^{2} \leq \frac{1}{\Delta t}    
+\end{equation*}
+
+Además, $S_{max} = M \Delta S \implies M = \frac{S_{max}}{\Delta S}$.
+
+\begin{align*}
+&\sigma^{2} ( \frac{S_{max}}{\Delta S} ) ^{2} \leq \frac{1}{\Delta t}    \\
+&\Delta t \leq (\frac{\Delta S}{\sigma S_{max}})^2
+\end{align*}
+
+De esta manera, obtenemos un $\Delta t$ en términos del $\Delta S$. Y finalmente, esta es la condición que nos determinará la estabilidad. \\
+ 
+Por otra parte, 
+
+\begin{align*}
+    \frac{1}{\Delta t} - \sigma^{2} j^{2} &\leq \frac{\Delta t}{1+r\Delta t} \\
+    -\sigma^{2} j^{2} &\leq r
+\end{align*}
+
+Finalmente, el $\Delta t$ calculado va a ser utilizado para calcular un $N_p = \frac{T}{\Delta t_p }$, el cual es un $N$ de prueba. El $N$ real se va a calcular aproximando $N_p$ al siguiente número entero $(N_p = \ceil*{N})$. \\
+
+Finalmente, las condiciones de frontera dependen del tipo de opción que se quiera valorar. Para opciones de tipo call, las condiciones de frontera están dadas por:
+\begin{align*}
+    f_{i0} &= Max(S_T-K,0) \approx Max(-K,0) = 0,  &\forall i \hspace{0.3cm} i = 0,1,\ldots,N\\
+    f_{Nj} &= Max(S_T-K,0) \approx Max(j \Delta S - K,0), \hspace{0.2cm} &\forall j \hspace{0.3cm} j = 0,1,\ldots M \\
+    f_{iM} &= Max(S_T-K,0) \approx Max(S_{max}-K,0), \hspace{0.2cm} &\forall i \hspace{0.3cm} i = 0,1,\ldots, N
+\end{align*}
+
+Y para opciones de tipo put están dadas por:
+\begin{align*}
+    f_{i0} &= Max(K-S_T,0) \approx Max(K-0,0) = K,  &\forall i \hspace{0.3cm} i = 0,1,\ldots,N\\
+    f_{Nj} &= Max(K-S_T,0) \approx Max(K - j \Delta S,0), \hspace{0.2cm} &\forall j \hspace{0.3cm} j = 0,1,\ldots M \\
+    f_{iM} &= Max(K-S_T,0) \approx Max(K-S_{max},0) = 0, \hspace{0.2cm} &\forall i \hspace{0.3cm} i = 0,1,\ldots, N
+\end{align*}
+
+\end{document}

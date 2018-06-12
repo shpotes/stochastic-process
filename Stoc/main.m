@@ -36,6 +36,7 @@ T = 1/4
 FF = [];
 tic
 for TS=1:10
+  TS
   call = blsprice(S_0, K, r, T, sigma);
   F = dif_fin(S_0, K, r, T, sigma, F_max, TS);
   error = (F - call)/call;
@@ -47,3 +48,4 @@ toc
 
 FF
 'Nosotros'
+csvwrite('../data/error.csv', FF)
